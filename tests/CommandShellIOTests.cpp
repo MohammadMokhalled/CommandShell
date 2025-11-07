@@ -22,8 +22,7 @@ using commandshell::CommandDetails;
 class CommandShellIOTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        instanceName = std::string("test-instance");
-        shell = &CommandShell::getInstance(instanceName);
+        shell = &owned;
         captured.clear();
     }
 
@@ -37,7 +36,7 @@ protected:
         return os.str();
     }
 
-    std::string instanceName;
+    CommandShell owned;               // own an instance for tests
     CommandShell* shell{nullptr};
     std::vector<std::string> captured;
 };

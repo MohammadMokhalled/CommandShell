@@ -35,12 +35,19 @@ void CommandShellIO::input(std::string &promptPart)
     auto commandStr = (eol == std::string::npos) ? mCurrentInput : mCurrentInput.substr(0, eol);
     auto commandParts = splitInput(commandStr);
 
+    Command command;
     if(commandParts.size() < 2) {
-        mCurrentInput.clear();
-        return;
+        // Allow bare `help` to map to `help list`
+        if (commandParts.size() == 1 && commandParts[0] == "help") {
+            command.component = "help";
+            command.command = "list";
+        } else {
+            mCurrentInput.clear();
+            return;
+        }
+    } else {
+        command = parseCommand(commandParts);
     }
-
-    auto command = parseCommand(commandParts);
     // Execute via CommandShell if a command is registered
     std::string output = mCommandShell.executeCommand(command);
     if(!output.empty() && mOnOutputCallback) {
