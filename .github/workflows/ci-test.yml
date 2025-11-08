@@ -36,11 +36,15 @@ jobs:
 
       - name: Configure (CMake)
         run: |
-          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SAMPLES=ON
 
       - name: Build
         run: |
           cmake --build build --config Release --parallel
+
+      - name: Build desktop sample
+        run: |
+          cmake --build build --config Release --parallel --target desktop-sample
 
       - name: Test
         run: |
