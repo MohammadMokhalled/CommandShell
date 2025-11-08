@@ -78,6 +78,7 @@ if(BUILD_TESTS)
     add_executable(${PROJECT_NAME}_tests
         tests/CommandShellIOTests.cpp
         tests/CommandShellTests.cpp
+        tests/CommandShellIntegrationTests.cpp
     )
     
     # Link test executable with library and gtest

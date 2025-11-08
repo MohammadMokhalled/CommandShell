@@ -200,43 +200,6 @@ TEST_F(CommandShellIOTest, EmptyInputWithEchoStillInvokesCallback) {
     EXPECT_EQ(captured[2], "\n");
 }
 
-// End-to-end demonstration: register a component/command and execute via IO
-TEST_F(CommandShellIOTest, EndToEndExecutesRegisteredCommand) {
-    ASSERT_NE(shell, nullptr);
-
-    // Register sample component and echo command
-    ComponentCommands sys{"sys", "System commands"};
-    CommandDetails echoCmd{
-        "echo",
-        "Echo arguments like /bin/echo",
-        [](const std::vector<std::string>& args, const std::vector<std::string>& opts) -> std::string {
-            bool noNewline = false;
-            for (const auto& o : opts) {
-                if (o == "-n" || o == "--no-newline") { noNewline = true; }
-            }
-            std::string out;
-            for (size_t i = 0; i < args.size(); ++i) {
-                if (i) out += ' ';
-                out += args[i];
-            }
-            if (!noNewline) out += '\n';
-            return out;
-        }
-    };
-    sys.addCommand(echoCmd);
-    shell->registerComponent(sys);
-
-    // Wire IO, disable echo so only command output is captured
-    CommandShellIO io(*shell, /*echoInput=*/false);
-    io.setOutputCallback([this](const std::string& s) { appendCapture(s); });
-
-    std::string line = "sys echo hello world\n";
-    io.input(line);
-
-    ASSERT_EQ(captured.size(), 2u);
-    EXPECT_EQ(captured[0], prompt);
-    EXPECT_EQ(captured[1], std::string("hello world\n"));
-}
 
 TEST_F(CommandShellIOTest, PrintPrompt_UsesDefaultPromptViaCallback) {
     ASSERT_NE(shell, nullptr);
