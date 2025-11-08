@@ -18,6 +18,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Option to build tests
 option(BUILD_TESTS "Build the tests" ON)
 
+# Option to build samples (e.g., desktop sample)
+option(BUILD_SAMPLES "Build sample applications" OFF)
+
 # Include directories
 include_directories(${PROJECT_SOURCE_DIR}/inc)
 
@@ -113,3 +116,8 @@ install(DIRECTORY inc/
     DESTINATION include
     FILES_MATCHING PATTERN "*.hpp"
 )
+
+# Samples
+if(BUILD_SAMPLES)
+    add_subdirectory(sample/desktop-sample)
+endif()

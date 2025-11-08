@@ -66,6 +66,12 @@ cmake --build build
 ctest --test-dir build
 ```
 
+Build samples (optional):
+```bash
+cmake -S . -B build -DBUILD_SAMPLES=ON
+cmake --build build
+```
+
 ## Usage Example
 ### 1. CommandShell initialization
 Register a component with commands and execute them through `CommandShell`.
@@ -127,7 +133,11 @@ ioEcho.input(std::string("sample about\n"));
 - `inc/` public headers (`CommandShell.hpp`, `CommandShellIO.hpp`, `CommandTypes.hpp`)
 - `src/` library sources
 - `tests/` GoogleTest unit and integration tests
+- `sample/` example applications (see `sample/desktop-sample`)
 - `.github/workflows/ci-test.yml` GitHub Actions build + test
+
+## Samples
+- `desktop-sample`: minimal terminal app showcasing `CommandShell` + `CommandShellIO`. Enable with `-DBUILD_SAMPLES=ON` and run the produced `desktop-sample` binary. See `sample/desktop-sample/README.md`.
 
 ## Development
 - Enable tests with `-DBUILD_TESTS=ON` (default in this repo)
