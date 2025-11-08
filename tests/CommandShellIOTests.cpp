@@ -39,6 +39,7 @@ protected:
     CommandShell owned;               // own an instance for tests
     CommandShell* shell{nullptr};
     std::vector<std::string> captured;
+    const std::string prompt = "cmd> ";
 };
 
 // Helper subclass to expose protected methods for testing
@@ -57,8 +58,12 @@ TEST_F(CommandShellIOTest, EchoesInputViaCallbackSingleChunk) {
     std::string line = "echo HelloIO\n";
     io.input(line);
 
-    ASSERT_EQ(captured.size(), 1u);
-    EXPECT_EQ(captured[0], line);
+    // captured:
+    // "cmd>" 
+    // "echo HelloIO"
+    // ""
+    ASSERT_EQ(captured.size(), 3u);
+    EXPECT_EQ(captured[1], line);
 }
 
 TEST_F(CommandShellIOTest, EchoesInputAcrossMultipleChunksUntilNewline) {
@@ -76,11 +81,13 @@ TEST_F(CommandShellIOTest, EchoesInputAcrossMultipleChunksUntilNewline) {
     io.input(p3);
     io.input(p4);
 
-    ASSERT_EQ(captured.size(), 4u);
-    EXPECT_EQ(captured[0], p1);
-    EXPECT_EQ(captured[1], p2);
-    EXPECT_EQ(captured[2], p3);
-    EXPECT_EQ(captured[3], p4);
+    ASSERT_EQ(captured.size(), 6u);
+    EXPECT_EQ(captured[0], prompt);
+    EXPECT_EQ(captured[1], p1);
+    EXPECT_EQ(captured[2], p2);
+    EXPECT_EQ(captured[3], p3);
+    EXPECT_EQ(captured[4], p4);
+    EXPECT_EQ(captured[5], "");
 }
 
 TEST_F(CommandShellIOTest, SplitInputBasicAndMultipleSpaces) {
@@ -156,8 +163,8 @@ TEST_F(CommandShellIOTest, CharPointerPromptOverloadEchoesInput) {
     const char* part = "echo Zed\n";
     io.input(const_cast<char*>(part), std::strlen(part));
 
-    ASSERT_EQ(captured.size(), 1u);
-    EXPECT_EQ(captured[0], std::string(part));
+    ASSERT_EQ(captured.size(), 3u);
+    EXPECT_EQ(captured[1], std::string(part));
 }
 
 TEST_F(CommandShellIOTest, EchoDisabledDoesNotInvokeCallback) {
@@ -172,7 +179,8 @@ TEST_F(CommandShellIOTest, EchoDisabledDoesNotInvokeCallback) {
     io.input(part1);
     io.input(part2);
 
-    EXPECT_TRUE(captured.empty());
+    // receives only the prompt
+    EXPECT_EQ(captured.size(), 1);
 }
 
 TEST_F(CommandShellIOTest, EmptyInputWithEchoStillInvokesCallback) {
@@ -186,9 +194,10 @@ TEST_F(CommandShellIOTest, EmptyInputWithEchoStillInvokesCallback) {
     std::string nl = "\n";
     io.input(nl);
 
-    ASSERT_EQ(captured.size(), 2u);
-    EXPECT_EQ(captured[0], "");
-    EXPECT_EQ(captured[1], "\n");
+    ASSERT_EQ(captured.size(), 3u);
+    EXPECT_EQ(captured[0], prompt);
+    EXPECT_EQ(captured[1], "");
+    EXPECT_EQ(captured[2], "\n");
 }
 
 // End-to-end demonstration: register a component/command and execute via IO
@@ -224,6 +233,55 @@ TEST_F(CommandShellIOTest, EndToEndExecutesRegisteredCommand) {
     std::string line = "sys echo hello world\n";
     io.input(line);
 
-    ASSERT_EQ(captured.size(), 1u);
-    EXPECT_EQ(captured[0], std::string("hello world\n"));
+    ASSERT_EQ(captured.size(), 2u);
+    EXPECT_EQ(captured[0], prompt);
+    EXPECT_EQ(captured[1], std::string("hello world\n"));
+}
+
+TEST_F(CommandShellIOTest, PrintPrompt_UsesDefaultPromptViaCallback) {
+    ASSERT_NE(shell, nullptr);
+    CommandShellIO io(*shell, /*echoInput=*/false);
+    io.setOutputCallback([this](const std::string& s) { appendCapture(s); });
+
+    io.printPrompt();
+
+    ASSERT_EQ(captured.size(), 2u);
+    EXPECT_EQ(captured[0], prompt);
+    EXPECT_EQ(captured[1], prompt);
+}
+
+TEST_F(CommandShellIOTest, PrintPrompt_CustomPromptViaCallback) {
+    ASSERT_NE(shell, nullptr);
+    CommandShellIO io(*shell, /*echoInput=*/false, /*promptText=*/std::string("PS> "));
+    io.setOutputCallback([this](const std::string& s) { appendCapture(s); });
+
+    io.printPrompt();
+
+    ASSERT_EQ(captured.size(), 2u);
+    EXPECT_EQ(captured[0], std::string("PS> "));
+    EXPECT_EQ(captured[1], std::string("PS> "));
+}
+
+TEST_F(CommandShellIOTest, PrintPrompt_IgnoresEchoSetting) {
+    ASSERT_NE(shell, nullptr);
+    // Echo on
+    {
+        captured.clear();
+        CommandShellIO io(*shell, /*echoInput=*/true, /*promptText=*/std::string("A> "));
+        io.setOutputCallback([this](const std::string& s) { appendCapture(s); });
+        io.printPrompt();
+        ASSERT_EQ(captured.size(), 2u);
+        EXPECT_EQ(captured[0], std::string("A> "));
+        EXPECT_EQ(captured[1], std::string("A> "));
+    }
+    // Echo off
+    {
+        captured.clear();
+        CommandShellIO io(*shell, /*echoInput=*/false, /*promptText=*/std::string("B> "));
+        io.setOutputCallback([this](const std::string& s) { appendCapture(s); });
+        io.printPrompt();
+        ASSERT_EQ(captured.size(), 2u);
+        EXPECT_EQ(captured[0], std::string("B> "));
+        EXPECT_EQ(captured[1], std::string("B> "));
+    }
 }

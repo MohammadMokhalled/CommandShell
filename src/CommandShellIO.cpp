@@ -6,8 +6,8 @@
 
 using namespace commandshell;
 
-CommandShellIO::CommandShellIO(CommandShell &shell, bool echo)
-    : mCommandShell(shell), mEchoInput(echo), mCurrentInput(""), mOnOutputCallback(nullptr) {}
+CommandShellIO::CommandShellIO(CommandShell &shell, bool echo, std::string promptText)
+    : mCommandShell(shell), mEchoInput(echo), mCurrentInput(""), mOnOutputCallback(nullptr), mPromptText(std::move(promptText)) {}
 
 void CommandShellIO::input(std::string &promptPart)
 {
@@ -50,11 +50,11 @@ void CommandShellIO::input(std::string &promptPart)
     }
     // Execute via CommandShell if a command is registered
     std::string output = mCommandShell.executeCommand(command);
-    if(!output.empty() && mOnOutputCallback) {
-        mOnOutputCallback(output);
-    }
     mCurrentInput.clear();
 
+    if(mOnOutputCallback) {
+        mOnOutputCallback(output);
+    } 
 }
 
 void CommandShellIO::input(char *promptPart, size_t size)
@@ -66,6 +66,14 @@ void CommandShellIO::input(char *promptPart, size_t size)
 void CommandShellIO::setOutputCallback(std::function<void(const std::string &)> callback)
 {
     mOnOutputCallback = std::move(callback);
+    printPrompt();
+}
+
+void CommandShellIO::printPrompt()
+{
+    if (mOnOutputCallback) {
+        mOnOutputCallback(mPromptText);
+    }
 }
 
 /******************** Private methods *******************/

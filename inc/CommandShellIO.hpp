@@ -12,7 +12,7 @@ namespace commandshell {
 class CommandShellIO {
 public:
     // Constructor
-    CommandShellIO(CommandShell& shell, bool echoInput = true);
+    CommandShellIO(CommandShell& shell, bool echoInput = true, std::string promptText = "cmd> ");
 
     // Get command input with string prompt
     void input(std::string& promptPart);
@@ -22,6 +22,9 @@ public:
 
     // Set callback for when input is received
     void setOutputCallback(std::function<void(const std::string&)> callback);
+
+    // Print the prompt via output callback (or stdout if none)
+    void printPrompt();
 
 protected:
     // Split input into parts
@@ -35,6 +38,7 @@ private:
     bool mEchoInput;
     std::string mCurrentInput;
     std::function<void(const std::string&)> mOnOutputCallback;
+    std::string mPromptText;
 };
 } // namespace commandshell
 #endif // COMMANDSHELL_IO_HPP
