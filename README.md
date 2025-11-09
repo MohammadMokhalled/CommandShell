@@ -1,7 +1,11 @@
 # CommandShell
 
 Lightweight C++17 library for composing simple, testable command interfaces. Register components and their commands, then execute parsed input through a small IO helper that plugs into your app or UI.
-This project is created with an embedded use cases in mind but it is not neccessary very optimized, specially in memory usage. It was important for me to use some C++ practices here. 
+This project is created with an embedded use cases in mind but it is not neccessary very optimized, specially in memory usage. It was important for me to use some C++ practices here.
+
+Note on embedded targets:
+- This library is not optimized for very small microcontrollers (RAM/flash constrained) and may not compile or run on boards like Arduino Uno/Nano.
+- It has been tested primarily on ESP32-class devices. Use on other MCUs at your own discretion.
 
 [![ci test](https://github.com/MohammadMokhalled/CommandShell/actions/workflows/ci-test.yml/badge.svg)](https://github.com/MohammadMokhalled/CommandShell/actions/workflows/ci-test.yml)
 
@@ -132,11 +136,11 @@ ioEcho.input(std::string("sample about\n"));
 ## Project Layout
 - `src/` library sources and public headers (`CommandShell.hpp`, `CommandShellIO.hpp`, `CommandTypes.hpp`)
 - `tests/` GoogleTest unit and integration tests
-- `sample/` example applications (see `sample/desktop-sample`)
+- `examples/` example applications (see `examples/desktop-sample`)
 - `.github/workflows/ci-test.yml` GitHub Actions build + test
 
 ## Samples
-- `desktop-sample`: minimal terminal app showcasing `CommandShell` + `CommandShellIO`. Enable with `-DBUILD_SAMPLES=ON` and run the produced `desktop-sample` binary. See `sample/desktop-sample/README.md`.
+- `desktop-sample`: minimal terminal app showcasing `CommandShell` + `CommandShellIO`. Enable with `-DBUILD_SAMPLES=ON` and run the produced `desktop-sample` binary. See `examples/desktop-sample/README.md`.
 
 ## Development
 - Enable tests with `-DBUILD_TESTS=ON` (default in this repo)

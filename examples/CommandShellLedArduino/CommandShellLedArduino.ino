@@ -1,5 +1,5 @@
 /*
-  CommandShellLed
+  CommandShellLedArduino
 
   Arduino sketch demonstrating the repository's CommandShell library
   to control the built-in LED via UART. Commands follow the
