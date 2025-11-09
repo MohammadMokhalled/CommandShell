@@ -3,8 +3,8 @@
 #undef CommandShell
 #endif
 
-#include "../inc/CommandShellIO.hpp"
-#include "../inc/CommandShell.hpp"
+#include "../src/CommandShellIO.hpp"
+#include "../src/CommandShell.hpp"
 
 #include <gtest/gtest.h>
 #include <string>

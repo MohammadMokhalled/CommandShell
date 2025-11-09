@@ -22,7 +22,7 @@ option(BUILD_TESTS "Build the tests" ON)
 option(BUILD_SAMPLES "Build sample applications" OFF)
 
 # Include directories
-include_directories(${PROJECT_SOURCE_DIR}/inc)
+include_directories(${PROJECT_SOURCE_DIR}/src)
 
 # Source files
 set(SOURCES
@@ -32,9 +32,9 @@ set(SOURCES
 
 # Header files
 set(HEADERS
-    inc/CommandShell.hpp
-    inc/CommandShellIO.hpp
-    inc/CommandTypes.hpp
+    src/CommandShell.hpp
+    src/CommandShellIO.hpp
+    src/CommandTypes.hpp
 )
 
 # Create library
@@ -112,7 +112,7 @@ install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION bin
 )
 
-install(DIRECTORY inc/
+install(DIRECTORY src/
     DESTINATION include
     FILES_MATCHING PATTERN "*.hpp"
 )

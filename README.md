@@ -130,8 +130,7 @@ ioEcho.input(std::string("sample about\n"));
 ```
 
 ## Project Layout
-- `inc/` public headers (`CommandShell.hpp`, `CommandShellIO.hpp`, `CommandTypes.hpp`)
-- `src/` library sources
+- `src/` library sources and public headers (`CommandShell.hpp`, `CommandShellIO.hpp`, `CommandTypes.hpp`)
 - `tests/` GoogleTest unit and integration tests
 - `sample/` example applications (see `sample/desktop-sample`)
 - `.github/workflows/ci-test.yml` GitHub Actions build + test
