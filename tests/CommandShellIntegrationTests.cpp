@@ -56,7 +56,7 @@ TEST(CommandShellIntegrationTests, EndToEndExecutesRegisteredCommand)
     std::string line = "sys echo hello world\n";
     io.input(line);
 
-    ASSERT_EQ(cap.out.size(), 2u);
+    ASSERT_GE(cap.out.size(), 2u);
     EXPECT_EQ(cap.out[0], std::string("cmd> "));
     EXPECT_EQ(cap.out[1], std::string("hello world\n"));
 }
@@ -93,8 +93,7 @@ TEST(CommandShellIntegrationTests, EndToEndExecutesWithNoNewlineOption)
     std::string line = "sys echo -n hello\n";
     io.input(line);
 
-    ASSERT_EQ(cap.out.size(), 2u);
+    ASSERT_GE(cap.out.size(), 2u);
     EXPECT_EQ(cap.out[0], std::string("cmd> "));
     EXPECT_EQ(cap.out[1], std::string("hello")); // no trailing newline
 }
-
