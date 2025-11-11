@@ -1,6 +1,6 @@
 // Unit tests for CommandShell (direct execution and help rendering)
-#include "../inc/CommandShell.hpp"
-#include "../inc/CommandTypes.hpp"
+#include "../src/CommandShell.hpp"
+#include "../src/CommandTypes.hpp"
 
 #include <gtest/gtest.h>
 #include <string>

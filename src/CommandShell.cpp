@@ -113,7 +113,7 @@ std::string CommandShell::executeCommand(const Command &command)
     auto compIt = mComponents.find(command.component);
     if (compIt == mComponents.end())
     {
-        return std::string{};
+        return std::string{"Unknown component '" + command.component + "'\n"};
     }
 
     const auto& comp = compIt->second;
@@ -130,7 +130,7 @@ std::string CommandShell::executeCommand(const Command &command)
     auto maybe = comp.getCommandFunction(command.command);
     if (!maybe.has_value())
     {
-        return std::string{};
+        return std::string{"Unknown command for component '" + command.component + "'\n"};
     }
 
     const auto& details = maybe.value();
