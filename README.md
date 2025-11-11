@@ -134,10 +134,13 @@ ioEcho.input(std::string("sample about\n"));
 ```
 
 ## Project Layout
-- `src/` library sources and public headers (`CommandShell.hpp`, `CommandShellIO.hpp`, `CommandTypes.hpp`)
+- `src/` library sources and public headers (`CommandShell.hpp`, `CommandShellIO.hpp`, `CommandTypes.hpp`) to be able to use as Arduino library
 - `tests/` GoogleTest unit and integration tests
 - `examples/` example applications (see `examples/desktop-sample`)
 - `.github/workflows/ci-test.yml` GitHub Actions build + test
+
+## Why Arduino?
+I know it is not the best choice but this project is just a sample project and wanted to use on a microcontroller system to test and created it like that. 
 
 ## Samples
 - `desktop-sample`: minimal terminal app showcasing `CommandShell` + `CommandShellIO`. Enable with `-DBUILD_SAMPLES=ON` and run the produced `desktop-sample` binary. See `examples/desktop-sample/README.md`.
