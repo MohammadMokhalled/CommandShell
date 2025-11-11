@@ -21,6 +21,6 @@ This folder contains example applications that demonstrate how to use the Comman
 
 Note on microcontrollers:
 - The library is not optimized for very small MCUs and may not work on devices like Arduino Uno/Nano due to RAM/flash limits.
-- This repository’s Arduino sketch has been tested primarily on ESP32 boards.
+- This repository’s Arduino sketch has been tested primarily on ESP8266 boards.
 
 See each subfolder’s README for details.

@@ -20,6 +20,7 @@
 #include "CommandShell.hpp"
 #include "CommandShellIO.hpp"
 #include "CommandTypes.hpp"
+#include "LedController.hpp"
 
 #if defined(LED_BUILTIN)
   const int LED_PIN = LED_BUILTIN;
@@ -37,77 +38,33 @@ using commandshell::CommandDetails;
 // Global shell and IO
 CommandShell gShell;
 CommandShellIO* gIO = nullptr;
+static LedController gLed(LED_PIN);
 
 // Simple serial-output callback used by CommandShellIO
 static void serialOut(const std::string& s)
 {
   if (!s.empty()) {
     Serial.print(s.c_str());
-    // ensure output ends with newline for neatness when responses lack it
-    if (s.back() != '\n' && s.back() != '\r') {
-      Serial.print("\r\n");
-    }
   }
 }
 
-static std::string ledStatusText()
-{
-  return std::string("LED: ") + (digitalRead(LED_PIN) == HIGH ? "ON\n" : "OFF\n");
-}
+static std::string ledStatusText() { return gLed.statusText(); }
 
 static void registerLedComponent()
 {
-  ComponentCommands led{"led", "Control the built-in LED"};
-
-  led.addCommand(CommandDetails{
-      "on",
-      "Turn LED on",
-      [](const std::vector<std::string>&, const std::vector<std::string>&) -> std::string {
-        digitalWrite(LED_PIN, HIGH);
-        return std::string("OK: LED ON\n");
-      }
-  });
-
-  led.addCommand(CommandDetails{
-      "off",
-      "Turn LED off",
-      [](const std::vector<std::string>&, const std::vector<std::string>&) -> std::string {
-        digitalWrite(LED_PIN, LOW);
-        return std::string("OK: LED OFF\n");
-      }
-  });
-
-  led.addCommand(CommandDetails{
-      "toggle",
-      "Toggle LED state",
-      [](const std::vector<std::string>&, const std::vector<std::string>&) -> std::string {
-        int current = digitalRead(LED_PIN);
-        digitalWrite(LED_PIN, current == HIGH ? LOW : HIGH);
-        return ledStatusText();
-      }
-  });
-
-  led.addCommand(CommandDetails{
-      "status",
-      "Show current LED state",
-      [](const std::vector<std::string>&, const std::vector<std::string>&) -> std::string {
-        return ledStatusText();
-      }
-  });
-
-  gShell.registerComponent(led);
+  gShell.registerComponent(gLed.buildCommands());
 }
 
 void setup() {
-  pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, LOW);
+  gLed.begin();
 
-  Serial.begin(BAUD_RATE);
+  // Explicitly set 8 data bits, no parity, 1 stop bit
+  Serial.begin(BAUD_RATE, SERIAL_8N1);
   while (!Serial) { /* wait for native USB boards */ }
 
   registerLedComponent();
 
-  static CommandShellIO io(gShell, /*echoInput*/ false, /*prompt*/ "cmd> ");
+  static CommandShellIO io(gShell, /*echoInput*/ true, /*prompt*/ "cmd> ");
   gIO = &io;
   gIO->setOutputCallback(serialOut);
 
@@ -119,28 +76,12 @@ void setup() {
   gIO->printPrompt();
 }
 
-// Accumulate serial input and forward to CommandShellIO
-static const size_t BUF_SZ = 128;
-static char lineBuf[BUF_SZ];
-static size_t lineLen = 0;
-
 void loop() {
+  // Run LED state machine
+  gLed.update();
+
   while (Serial.available() > 0) {
-    int ch = Serial.read();
-    if (ch == '\r') {
-      continue; // normalize to \n
-    } else if (ch == '\n') {
-      // complete line; pass to IO with newline
-      if (lineLen < BUF_SZ - 1) {
-        lineBuf[lineLen++] = '\n';
-      }
-      gIO->input(lineBuf, lineLen);
-      lineLen = 0;
-      // After processing, CommandShellIO prints prompt via callback
-    } else {
-      if (lineLen < BUF_SZ - 1) {
-        lineBuf[lineLen++] = (char)ch;
-      } // else drop extra chars until EOL
-    }
+    char ch = Serial.read();
+    gIO->input(&ch, 1);
   }
 }

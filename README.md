@@ -5,7 +5,7 @@ This project is created with an embedded use cases in mind but it is not neccess
 
 Note on embedded targets:
 - This library is not optimized for very small microcontrollers (RAM/flash constrained) and may not compile or run on boards like Arduino Uno/Nano.
-- It has been tested primarily on ESP32-class devices. Use on other MCUs at your own discretion.
+- It has been tested primarily on ESP8266 devices. Use on other MCUs at your own discretion.
 
 [![ci test](https://github.com/MohammadMokhalled/CommandShell/actions/workflows/ci-test.yml/badge.svg)](https://github.com/MohammadMokhalled/CommandShell/actions/workflows/ci-test.yml)
 

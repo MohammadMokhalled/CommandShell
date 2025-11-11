@@ -4,7 +4,7 @@ An Arduino sketch demonstrating how to use this library’s `CommandShell` and `
 
 Compatibility note:
 - This library is not optimized for very small microcontrollers (e.g., Arduino Uno/Nano) and may exceed RAM/flash limits.
-- This example has been tested primarily on ESP32 boards.
+- This example has been tested primarily on ESP8266 boards.
 
 ## What It Does
 - Registers a `led` component with commands: `on`, `off`, `toggle`, `status`.

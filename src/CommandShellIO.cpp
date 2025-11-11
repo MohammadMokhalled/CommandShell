@@ -11,7 +11,7 @@ CommandShellIO::CommandShellIO(CommandShell &shell, bool echo, std::string promp
 
 void CommandShellIO::input(std::string &promptPart)
 {
-    if(mEchoInput)
+    if(mEchoInput && mOnOutputCallback)
     {
         mOnOutputCallback(promptPart);
     }
@@ -35,26 +35,32 @@ void CommandShellIO::input(std::string &promptPart)
     auto commandStr = (eol == std::string::npos) ? mCurrentInput : mCurrentInput.substr(0, eol);
     auto commandParts = splitInput(commandStr);
 
+    std::string output;
     Command command;
-    if(commandParts.size() < 2) {
+    if(commandParts.empty()) {
+        output = ""; // No-op on empty input
+    }
+    else if(commandParts.size() < 2) {
         // Allow bare `help` to map to `help list`
         if (commandParts.size() == 1 && commandParts[0] == "help") {
             command.component = "help";
             command.command = "list";
         } else {
-            mCurrentInput.clear();
-            return;
+            output = "Error: Incomplete command.\n";
         }
     } else {
         command = parseCommand(commandParts);
+        // Execute via CommandShell if a command is registered
+        output = mCommandShell.executeCommand(command);
     }
-    // Execute via CommandShell if a command is registered
-    std::string output = mCommandShell.executeCommand(command);
+
     mCurrentInput.clear();
 
     if(mOnOutputCallback) {
         mOnOutputCallback(output);
     } 
+
+    printPrompt();
 }
 
 void CommandShellIO::input(char *promptPart, size_t size)
