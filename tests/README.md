@@ -17,7 +17,7 @@ Windows (VS Developer Command Prompt):
 - `scripts\\build_and_test.bat` builds Debug and runs tests.
 
 ## Adding Tests
-- Place new tests in this directory and include headers from `inc/` (e.g., `#include "../inc/CommandShell.hpp"`).
+- Place new tests in this directory and include headers from `src/` (e.g., `#include "../src/CommandShell.hpp"`).
 - Update the root `CMakeLists.txt` to add your new test source file to the `${PROJECT_NAME}_tests` executable (tests are listed explicitly).
 - Prefer small, focused tests; keep integration scenarios in a dedicated `*IntegrationTests.cpp` file.
 
