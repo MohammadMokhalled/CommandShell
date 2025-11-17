@@ -120,5 +120,4 @@ install(DIRECTORY src/
 # Samples
 if(BUILD_SAMPLES)
     add_subdirectory(examples/desktop-sample)
-    add_subdirectory(examples/arduino-sample)
 endif()
